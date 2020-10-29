@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class AnimetabaseCLI {
@@ -65,7 +66,6 @@ public class AnimetabaseCLI {
 				break;
 
 			case MAIN_MENU_OPTION_EXIT:
-				System.out.println("\nHave a nice day!");
 				endMethod();
 				shouldProcess = false;
 				break;
@@ -270,8 +270,30 @@ public class AnimetabaseCLI {
 		}
 	}
 	
+	 public String sayGoodbyeStatement() { 
+	        Random rand = new Random(); 
+	        List<String> list = new ArrayList<>();
+	        list.add("Have a nice day!");
+	        list.add("Goodbye!");
+	        list.add("See ya later!");
+	        list.add("Sayonara!");
+	        list.add("Matane!");
+	        list.add("Aishite imasu.");
+	        list.add("Have a good one!");
+	        list.add("Adios!");
+	        list.add("Until next time!");
+	        list.add("Good night!");
+	        list.add("Suki desu!");
+	        list.add("Bye!");
+	        list.add("See ya!");
+	        list.add("uwu ヽ(•‿•)ノ");
+	        return list.get(rand.nextInt(list.size())); 
+	    }
+	
 	public void endMethod() throws IOException {
 		saveShows();
+		System.out.println();
+		System.out.println(sayGoodbyeStatement());
 	}
 	
 }
