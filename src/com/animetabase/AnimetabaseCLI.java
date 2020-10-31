@@ -25,6 +25,7 @@ public class AnimetabaseCLI {
 							MAIN_MENU_OPTION_EDIT_SHOW, MAIN_MENU_OPTION_REMOVE_SHOW, MAIN_MENU_OPTION_EXIT };
 	private Menu menu;
 	private FileWriter fileWriter;
+	private PrintWriter printWriter;
 	private BufferedWriter bufferedWriter;
 	private List<Show> theShows;
 
@@ -40,6 +41,7 @@ public class AnimetabaseCLI {
 		
 		File yourList = new File("yourlist.txt");
 		loadYourList(yourList);
+		saveShows();
 
 		boolean shouldProcess = true;
 
@@ -83,7 +85,7 @@ public class AnimetabaseCLI {
 		System.out.println("|  _  || . ` | | | | |\\/| ||  __|  | ||  _  || ___ \\  _  | `--. \\  __|");
 		System.out.println("| | | || |\\  |_| |_| |  | || |___  | || | | || |_/ / | | |/\\__/ / |___");
 		System.out.print("\\_| |_/\\_| \\_/\\___/\\_|  |_/\\____/  \\_/\\_| |_/\\____/\\_| |_/\\____/\\____/");
-		System.out.println("  Okaeri ヽ(•‿•)ノ");
+		System.out.println("  Okaeri");
 		System.out.println("\nWhat would you like to do today?");
 
 	}
@@ -100,6 +102,16 @@ public class AnimetabaseCLI {
 		while (shouldAsk) {
 			System.out.print("What is the name of your new addition? ");
 			name = input.nextLine();
+			if (name == null) {
+				System.out.println("Come on, man. You gotta type something there.");
+				return;
+			}
+			for (Show s : theShows) {
+				if (s.getName().equals(name)) {
+					System.out.println("\nSorry, our system thinks you may have already inputted this show. Try again with a different name!");
+					return;
+				}
+			}
 			System.out.print("Is this show still ongoing? ");
 			String ongoingString = input.nextLine();
 			if (ongoingString.equalsIgnoreCase("Y")) {
@@ -147,10 +159,34 @@ public class AnimetabaseCLI {
 	}
 
 	public void saveShows() throws IOException {
-		
+		Scanner printReader = new Scanner("yourlist.txt");
+		File theFile = new File("yourlist.txt");
+		int counter = 0;
+
+		while (printReader.hasNext()) {
+		String theLine = printReader.nextLine();
+		PrintWriter deleter = new PrintWriter(theFile);
+		if (!theLine.equals("")) {
+		deleter.print("");
+		deleter.close();
+		}else if (theLine.equals("")){
+			if (counter == 0) {
+				counter++;
+			}else if (counter == 1){
+				break;
+			}
+		}
+		}
 		for (Show s : theShows) {
-			try {
-				File theFile = new File("yourlist.txt");
+/*			while (printReader.hasNext()) {
+				String theLine = printReader.nextLine();
+				String[] theValues = theLine.split("\\|");
+				if (theValues[0].equals(s.getName())) {
+					return;
+				}
+			}
+*/			try {
+				
 				if (!theFile.exists()) {
 					theFile.createNewFile();
 				}
@@ -195,15 +231,16 @@ public class AnimetabaseCLI {
 		Show theShow = null;
 		for (Show s : theShows) {
 			if(s.getName().equalsIgnoreCase(nameToLookFor)) {
-			return s;
-		}else {
-			System.out.println("Sorry, but the system did not find the show you were looking for! Try again!");
-			return theShow;
+			theShow = s;
+			}
 		}
-		}return theShow;		
+		if (theShow == null) {
+			System.out.println("Sorry, but the system did not find the show you were looking for! Try again!");
+		}
+		return theShow;
 	}
 	
-	public void deleteShow() throws FileNotFoundException {
+	public void deleteShow() throws IOException {
 		Scanner input = new Scanner(System.in);
 		System.out.println();
 		System.out.print("That's sad to hear. What show did you want to remove? ");
@@ -215,13 +252,14 @@ public class AnimetabaseCLI {
 			System.out.println();
 			System.out.println("Sorry, the system didn't like whatever you inputted. Try again!");
 		}
+		saveShows();
 	}
 	
-	public void editShow() throws FileNotFoundException {
+	public void editShow() throws IOException {
 		Scanner input = new Scanner(System.in);
 		displayShows();
 		System.out.println();
-		System.out.print("What is the name of the show would you like to edit?");
+		System.out.print("What is the name of the show would you like to edit? ");
 		String showToEdit = input.nextLine();
 		System.out.println("What would you like to change about the show?");
 		System.out.println("[1] The Name");
@@ -230,7 +268,11 @@ public class AnimetabaseCLI {
 		System.out.println("[4] Its Ongoing Status");
 		
 		String choice = input.nextLine();
+		if (showToEdit==null) {
+			return;
+		}
 		Show showToChange = searchFor(showToEdit);
+		try {
 		if (Integer.valueOf(choice) < 1 || Integer.valueOf(choice) > 4) {
 			System.out.println("Sorry, the system didn't like whatever you inputted. Try again!");
 			return;
@@ -261,12 +303,17 @@ public class AnimetabaseCLI {
 			
 		case "4":
 			System.out.println("Current Ongoing Status: " + showToChange.showIsOngoing());
-			System.out.print("What should the new is ongoing status be? "
+			System.out.println("What should the new is ongoing status be? "
 					+ "\nIs Ongoing = true  |  Is Not Ongoing = false");
 			showToChange.setOngoing(Boolean.parseBoolean(input.nextLine().toLowerCase()));
 			System.out.println("Gotcha! We'll make that change right now! Go make sure we did it right!");
 			break;
 		}
+		saveShows();
+		}
+		}catch (NumberFormatException ex) {
+			System.out.println("Sorry, the system didn't like whatever you inputted. Try again!");
+			return;
 		}
 	}
 	
@@ -286,7 +333,7 @@ public class AnimetabaseCLI {
 	        list.add("Suki desu!");
 	        list.add("Bye!");
 	        list.add("See ya!");
-	        list.add("uwu ヽ(•‿•)ノ");
+	        list.add("uwu");
 	        return list.get(rand.nextInt(list.size())); 
 	    }
 	
